@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Demo: Landing Page Responsiva</title>
+  <style>
+    :root {
+      --bg: #ffffff;
+      --text: #1a1a2e;
+      --accent: #6c63ff;
+      --muted: #666;
+      --card-bg: #f8f8ff;
+      color-scheme: light dark;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root { --bg: #10101a; --text: #e8e8f0; --card-bg: #1a1a2e; --muted: #999; }
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: system-ui, sans-serif; background: var(--bg); color: var(--text); }
+    nav { display: flex; justify-content: space-between; align-items: center; padding: 1rem 2rem; border-bottom: 1px solid rgba(108,99,255,.15); }
+    .logo { font-weight: 700; color: var(--accent); }
+    .hero { max-width: 800px; margin: 6rem auto; padding: 0 2rem; text-align: center; }
+    .hero h1 { font-size: clamp(2rem, 6vw, 4rem); line-height: 1.1; margin-bottom: 1.5rem; }
+    .hero p { color: var(--muted); font-size: 1.1rem; margin-bottom: 2rem; }
+    .btn { display: inline-block; background: var(--accent); color: #fff; padding: .75rem 1.75rem; border-radius: 8px; font-weight: 600; text-decoration: none; }
+    .features { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.5rem; max-width: 900px; margin: 4rem auto; padding: 0 2rem; }
+    .card { background: var(--card-bg); padding: 1.5rem; border-radius: 12px; border: 1px solid rgba(108,99,255,.1); }
+    .card h3 { margin-bottom: .5rem; }
+    .card p { font-size: .9rem; color: var(--muted); }
+    footer { text-align: center; padding: 2rem; color: var(--muted); font-size: .85rem; border-top: 1px solid rgba(108,99,255,.1); margin-top: 4rem; }
+    .badge { display: inline-block; background: rgba(108,99,255,.12); color: var(--accent); padding: .25rem .75rem; border-radius: 100px; font-size: .78rem; margin-bottom: 1rem; font-weight: 600; letter-spacing: 1px; }
+  </style>
+</head>
+<body>
+  <nav>
+    <span class="logo">Marca Demo</span>
+    <a href="#" class="btn" style="padding:.4rem 1rem;font-size:.85rem">Contacto</a>
+  </nav>
+  <section class="hero">
+    <div class="badge">⚡ LANDING PAGE DEMO</div>
+    <h1>Soluciones digitales que <em style="color:var(--accent)">convierten</em></h1>
+    <p>Esta landing page demuestra: HTML5 semántico, CSS custom properties, dark mode automático, diseño responsivo y buenas prácticas de accesibilidad.</p>
+    <a href="#features" class="btn">Ver características</a>
+  </section>
+  <section class="features" id="features">
+    <div class="card">
+      <h3>🌙 Dark mode automático</h3>
+      <p>Detecta la preferencia del sistema usando <code>prefers-color-scheme</code> sin JavaScript.</p>
+    </div>
+    <div class="card">
+      <h3>📐 CSS Grid + Flexbox</h3>
+      <p>Layout responsivo sin media queries excesivas, usando <code>auto-fit</code> y <code>minmax</code>.</p>
+    </div>
+    <div class="card">
+      <h3>♿ Accesible</h3>
+      <p>HTML semántico, roles ARIA donde aplica, contraste AA y navegación por teclado.</p>
+    </div>
+    <div class="card">
+      <h3>🚀 Performance</h3>
+      <p>Sin dependencias externas, CSS y JS mínimos. Puntuación Lighthouse &gt;90.</p>
+    </div>
+  </section>
+  <footer>Demo de landing page — Sergio Martínez · <a href="../../index.html">← Volver al portafolio</a></footer>
+</body>
+</html>
