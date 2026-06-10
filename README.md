@@ -1,7 +1,7 @@
 # 👨‍💻 Portafolio — Sergio Martínez
 
 > Ingeniero en Ciencias de la Computación | Frontend · CMS · DevOps básico  
-> [Ver sitio en vivo →](https://ingsergiomartinez.github.io/portfolio)
+> [Ver sitio en vivo →](https://ingsergiomartinezC.github.io/portfolio)
 
 ---
 
@@ -23,11 +23,11 @@ Este portafolio fue construido para demostrar habilidades alineadas al perfil de
 | Proyecto | Tecnologías | Descripción |
 |---|---|---|
 | [Landing page responsiva](./projects/landing-page/) | HTML · CSS · JS | Sitio estático, Lighthouse >90, dark mode |
-| [WordPress + Git Workflow](https://github.com/ingsergiomartinez/wp-git-workflow) | WordPress · Git | Tema hijo + flujo de versiones documentado |
-| [Entorno local ddev](https://github.com/ingsergiomartinez/ddev-starter) | Docker · ddev · NPM | Setup local para CMS con Makefile |
-| [Script de respaldo web](https://github.com/ingsergiomartinez/web-backup-script) | Bash · MySQL · Cron | Respaldo automatizado de BD y archivos |
+| [WordPress + Git Workflow](https://github.com/ingsergiomartinezC/wp-git-workflow) | WordPress · Git | Tema hijo + flujo de versiones documentado |
+| [Entorno local ddev](https://github.com/ingsergiomartinezC/ddev-starter) | Docker · ddev · NPM | Setup local para CMS con Makefile |
+| [Script de respaldo web](https://github.com/ingsergiomartinezC/web-backup-script) | Bash · MySQL · Cron | Respaldo automatizado de BD y archivos |
 | [QA Checklist](./projects/qa-checklist/) | Vanilla JS | Herramienta de revisión antes de publicar |
-| [Optimizador de imágenes](https://github.com/ingsergiomartinez/img-optimizer) | Python · Pillow · WebP | Conversión y redimensionado por lotes |
+| [Optimizador de imágenes](https://github.com/ingsergiomartinezC/img-optimizer) | Python · Pillow · WebP | Conversión y redimensionado por lotes |
 
 ---
 
@@ -81,5 +81,5 @@ git commit -m "docs: actualizar README con instrucciones de ddev"
 ## 📬 Contacto
 
 - LinkedIn: [linkedin.com/in/ingsergiomartinez](https://linkedin.com/in/ingsergiomartinez)
-- GitHub: [github.com/ingsergiomartinez](https://github.com/ingsergiomartinez)
+- GitHub: [github.com/ingsergiomartinezC](https://github.com/ingsergiomartinezC)
 - Ubicación: Querétaro, México · Disponible Home Office
