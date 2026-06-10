@@ -1,7 +1,7 @@
 # 👨‍💻 Portafolio — Sergio Martínez
 
 > Ingeniero en Ciencias de la Computación | Frontend · CMS · DevOps básico  
-> [Ver sitio en vivo →](https://ingsergiomartinezC.github.io/portfolio)
+> [Ver sitio en vivo →](https://ingsergiomartinezc.github.io/Portfolio/)
 
 ---
 
