@@ -20,14 +20,50 @@ Este portafolio fue construido para demostrar habilidades alineadas al perfil de
 
 ## 📁 Proyectos incluidos
 
-| Proyecto | Tecnologías | Descripción |
-|---|---|---|
-| [Landing page responsiva](./projects/landing-page/) | HTML · CSS · JS | Sitio estático, Lighthouse >90, dark mode |
-| [WordPress + Git Workflow](https://github.com/ingsergiomartinezC/wp-git-workflow) | WordPress · Git | Tema hijo + flujo de versiones documentado |
-| [Entorno local ddev](https://github.com/ingsergiomartinezC/ddev-starter) | Docker · ddev · NPM | Setup local para CMS con Makefile |
-| [Script de respaldo web](https://github.com/ingsergiomartinezC/web-backup-script) | Bash · MySQL · Cron | Respaldo automatizado de BD y archivos |
-| [QA Checklist](./projects/qa-checklist/) | Vanilla JS | Herramienta de revisión antes de publicar |
-| [Optimizador de imágenes](https://github.com/ingsergiomartinezC/img-optimizer) | Python · Pillow · WebP | Conversión y redimensionado por lotes |
+
+
+## 🌐 Sitios web publicados
+
+### [Clever Deutsch](https://www.cleverdeutsch.de/)
+2025
+
+Participación en:
+- Administración y actualización de contenido
+- Ajustes de frontend
+- Optimización de experiencia de usuario
+- Soporte técnico del sitio
+
+
+### [AP Análisis Predictivos](https://www.ap-analisispredictivos.com/)
+2021
+
+Participación en:
+- Implementación de contenido web
+- Ajustes HTML/CSS
+- Optimización visual
+- Soporte técnico y mantenimiento
+
+
+## 🚧 Proyectos en desarrollo
+
+### CMS Content Publisher Simulator
+Simulador de gestión de contenidos inspirado en plataformas CMS como WordPress y Craft CMS. Permite crear, editar y publicar contenido mediante una interfaz web.
+
+Tecnologías:
+HTML · CSS · JavaScript · LocalStorage
+
+### QA Pre-Publish Checklist
+Herramienta para revisión previa a despliegues de sitios web.
+
+Tecnologías:
+HTML · CSS · JavaScript
+
+### Image Optimizer
+
+Automatización para optimización de imágenes web mediante conversión a WebP y reducción de tamaño.
+
+Tecnologías:
+Python · Pillow · WebP
 
 ---
 
@@ -37,10 +73,8 @@ Este portafolio fue construido para demostrar habilidades alineadas al perfil de
 Frontend:   HTML5 · CSS3 (Flexbox/Grid) · JavaScript ES6+
 CMS:        WordPress · Craft CMS (en aprendizaje)
 Versiones:  Git · GitHub · commits semánticos
-Local:      Docker · ddev · NPM
 OS:         Ubuntu / Linux daily driver
 Scripts:    Bash · Python
-Diseño:     Figma · GIMP
 ```
 
 ---
@@ -55,7 +89,7 @@ portfolio/
 ├── js/
 │   └── main.js
 ├── projects/
-│   ├── landing-page/   ← Demo: landing responsiva
+│   ├── image-optimizer/ 
 │   └── qa-checklist/   ← Demo: herramienta de QA
 └── README.md
 ```
