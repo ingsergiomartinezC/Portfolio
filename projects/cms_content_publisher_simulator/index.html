@@ -1,0 +1,1441 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>CMS Simulator — Content Publisher</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+/* ── TOKENS ───────────────────────────────────── */
+:root{
+  --bg:        #0E0F11;
+  --surface:   #1C1D21;
+  --surface2:  #1C1D21;
+  --border:    #2A2B30;
+  --border2:   #C9C5BC;
+  --text:      #E8E9EC;
+  --text2:     #6B6860;
+  --text3:     #9C9A94;
+  --accent:    #2563EB;
+  --accent-bg: #EEF3FD;
+  --green:     #16A34A;
+  --green-bg:  #F0FDF4;
+  --amber:     #D97706;
+  --amber-bg:  #FFFBEB;
+  --red:       #DC2626;
+  --red-bg:    #FEF2F2;
+  --sidebar-w: 240px;
+  --header-h:  52px;
+  --radius:    6px;
+  --radius-lg: 10px;
+  --shadow:    0 1px 3px rgba(0,0,0,.06), 0 1px 2px rgba(0,0,0,.04);
+  --shadow-lg: 0 4px 16px rgba(0,0,0,.08);
+  --font:      'Inter', system-ui, sans-serif;
+  --mono:      'JetBrains Mono', monospace;
+  --trans:     160ms ease;
+}
+
+/* ── RESET ────────────────────────────────────── */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden}
+body{font-family:var(--font);font-size:14px;color:var(--text);background:var(--bg);display:flex;flex-direction:column}
+button{font-family:var(--font);cursor:pointer;border:none;background:none;font-size:14px}
+input,textarea,select{font-family:var(--font);font-size:14px;color:var(--text)}
+a{color:inherit;text-decoration:none}
+*:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:2px}
+
+/* ── TOP BAR ─────────────────────────────────── */
+.topbar{
+  height:var(--header-h);
+  background:var(--surface);
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;
+  padding:0 1rem;
+  gap:1rem;
+  flex-shrink:0;
+  position:relative;
+  z-index:50;
+}
+.topbar__logo{
+  display:flex;align-items:center;gap:8px;
+  font-size:15px;font-weight:600;color:var(--text);
+  padding-right:1rem;
+  border-right:1px solid var(--border);
+  white-space:nowrap;
+}
+.topbar__logo-icon{
+  width:26px;height:26px;
+  background:var(--accent);
+  border-radius:6px;
+  display:flex;align-items:center;justify-content:center;
+  color:#fff;font-size:13px;font-weight:700;
+}
+.topbar__site{
+  display:flex;align-items:center;gap:6px;
+  font-size:13px;color:var(--text2);
+}
+.topbar__site select{
+  border:1px solid var(--border);
+  background:var(--surface);
+  padding:4px 8px;
+  border-radius:var(--radius);
+  color:var(--text);
+  appearance:auto;
+}
+.topbar__right{display:flex;align-items:center;gap:8px;margin-left:auto}
+.topbar__env{
+  font-size:11px;font-family:var(--mono);
+  padding:3px 8px;border-radius:99px;
+  background:var(--green-bg);color:var(--green);
+  border:1px solid #BBF7D0;
+  font-weight:500;
+}
+.topbar__avatar{
+  width:30px;height:30px;border-radius:50%;
+  background:var(--accent);
+  color:#fff;font-size:12px;font-weight:600;
+  display:flex;align-items:center;justify-content:center;
+}
+.topbar__notif{
+  position:relative;
+  width:30px;height:30px;
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  display:flex;align-items:center;justify-content:center;
+  color:var(--text2);
+  background:var(--surface);
+}
+.topbar__notif-dot{
+  position:absolute;top:5px;right:5px;
+  width:6px;height:6px;border-radius:50%;
+  background:var(--red);
+  border:1.5px solid var(--surface);
+}
+
+/* ── SHELL ────────────────────────────────────── */
+.shell{flex:1;display:flex;overflow:hidden}
+
+/* ── SIDEBAR ──────────────────────────────────── */
+.sidebar{
+  width:var(--sidebar-w);
+  background:var(--surface);
+  border-right:1px solid var(--border);
+  display:flex;flex-direction:column;
+  flex-shrink:0;
+  overflow-y:auto;
+}
+.sidebar__section{padding:.5rem .75rem;margin-top:.25rem}
+.sidebar__label{
+  font-size:10px;font-weight:600;letter-spacing:1.2px;
+  text-transform:uppercase;color:var(--text3);
+  padding:.5rem .5rem .25rem;
+}
+.sidebar__item{
+  display:flex;align-items:center;gap:8px;
+  padding:7px 8px;
+  border-radius:var(--radius);
+  color:var(--text2);
+  font-size:13px;
+  cursor:pointer;
+  transition:background var(--trans),color var(--trans);
+  border:none;background:none;width:100%;text-align:left;
+}
+.sidebar__item:hover{background:var(--surface2);color:var(--text)}
+.sidebar__item.active{background:var(--accent-bg);color:var(--accent);font-weight:500}
+.sidebar__item svg{flex-shrink:0;width:16px;height:16px}
+.sidebar__badge{
+  margin-left:auto;
+  font-size:10px;font-weight:600;
+  background:var(--accent-bg);color:var(--accent);
+  padding:1px 6px;border-radius:99px;
+}
+.sidebar__badge.draft{background:var(--amber-bg);color:var(--amber)}
+
+/* ── MAIN ─────────────────────────────────────── */
+.main{flex:1;overflow-y:auto;display:flex;flex-direction:column}
+
+/* ── CONTENT LIST VIEW ───────────────────────── */
+.view{display:none;flex-direction:column;height:100%}
+.view.active{display:flex}
+
+.list-header{
+  padding:1.25rem 1.5rem 1rem;
+  border-bottom:1px solid var(--border);
+  background:var(--surface);
+  flex-shrink:0;
+  display:flex;align-items:center;gap:1rem;
+}
+.list-header h1{font-size:18px;font-weight:600}
+.list-header__actions{display:flex;gap:8px;margin-left:auto;align-items:center}
+.search-box{
+  display:flex;align-items:center;gap:6px;
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  padding:6px 10px;
+  background:var(--surface);
+  transition:border-color var(--trans);
+}
+.search-box:focus-within{border-color:var(--accent)}
+.search-box input{border:none;outline:none;background:none;width:180px;font-size:13px}
+.search-box svg{color:var(--text3);flex-shrink:0}
+
+.filter-bar{
+  padding:.75rem 1.5rem;
+  display:flex;gap:6px;align-items:center;
+  border-bottom:1px solid var(--border);
+  background:var(--bg);
+  flex-shrink:0;
+  flex-wrap:wrap;
+}
+.filter-chip{
+  padding:4px 12px;border-radius:99px;font-size:12px;
+  border:1px solid var(--border);background:var(--surface);
+  color:var(--text2);cursor:pointer;
+  transition:all var(--trans);
+}
+.filter-chip.active{background:var(--accent);border-color:var(--accent);color:#fff}
+.filter-chip:hover:not(.active){border-color:var(--border2);color:var(--text)}
+
+.content-list{flex:1;overflow-y:auto;padding:1rem 1.5rem;display:flex;flex-direction:column;gap:6px}
+
+.entry-card{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:var(--radius-lg);
+  padding:14px 16px;
+  display:flex;align-items:center;gap:12px;
+  cursor:pointer;
+  transition:border-color var(--trans),box-shadow var(--trans);
+}
+.entry-card:hover{border-color:var(--border2);box-shadow:var(--shadow)}
+.entry-card__type{
+  width:34px;height:34px;border-radius:var(--radius);
+  display:flex;align-items:center;justify-content:center;
+  font-size:15px;flex-shrink:0;
+}
+.entry-card__body{flex:1;min-width:0}
+.entry-card__title{font-weight:500;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.entry-card__meta{font-size:12px;color:var(--text2);margin-top:2px;display:flex;gap:8px;align-items:center}
+.entry-card__meta-dot{width:3px;height:3px;border-radius:50%;background:var(--text3)}
+.entry-card__right{display:flex;align-items:center;gap:8px;flex-shrink:0}
+.status-badge{
+  padding:3px 9px;border-radius:99px;font-size:11px;font-weight:500;
+}
+.status-badge.published{background:var(--green-bg);color:var(--green)}
+.status-badge.draft{background:var(--amber-bg);color:var(--amber)}
+.status-badge.review{background:var(--accent-bg);color:var(--accent)}
+.status-badge.archived{background:var(--surface2);color:var(--text3)}
+.entry-card__action{
+  width:28px;height:28px;border-radius:var(--radius);
+  display:flex;align-items:center;justify-content:center;
+  color:var(--text3);border:1px solid transparent;
+  transition:all var(--trans);
+}
+.entry-card__action:hover{background:var(--surface2);border-color:var(--border);color:var(--text2)}
+
+/* ── EDITOR VIEW ──────────────────────────────── */
+.editor-wrap{
+  flex:1;display:grid;
+  grid-template-columns:1fr 280px;
+  overflow:hidden;
+  min-height:0;
+}
+.editor-main{
+  display:flex;flex-direction:column;
+  overflow:hidden;
+  border-right:1px solid var(--border);
+}
+.editor-toolbar{
+  display:flex;align-items:center;gap:4px;
+  padding:8px 16px;
+  border-bottom:1px solid var(--border);
+  background:var(--surface);
+  flex-shrink:0;
+  flex-wrap:wrap;
+}
+.toolbar-sep{width:1px;height:18px;background:var(--border);margin:0 4px}
+.tool-btn{
+  width:30px;height:30px;border-radius:var(--radius);
+  display:flex;align-items:center;justify-content:center;
+  color:var(--text2);
+  transition:all var(--trans);
+  font-size:13px;font-weight:600;
+  border:1px solid transparent;
+}
+.tool-btn:hover{background:var(--surface2);border-color:var(--border);color:var(--text)}
+.tool-btn.active{background:var(--accent-bg);border-color:var(--accent-bg);color:var(--accent)}
+
+.editor-title-wrap{
+  padding:1.25rem 1.5rem .75rem;
+  border-bottom:1px solid var(--border);
+  background:var(--surface);
+  flex-shrink:0;
+}
+.editor-title-input{
+  width:100%;font-size:22px;font-weight:600;
+  border:none;outline:none;background:none;
+  color:var(--text);
+  line-height:1.3;
+  resize:none;
+}
+.editor-title-input::placeholder{color:var(--text3)}
+.editor-slug{
+  font-size:12px;color:var(--text3);margin-top:6px;
+  font-family:var(--mono);display:flex;align-items:center;gap:4px;
+}
+.editor-slug span{color:var(--text2)}
+
+.editor-body{
+  flex:1;overflow-y:auto;
+  background:var(--surface);
+}
+.editor-content{
+  min-height:100%;
+  padding:1.25rem 1.5rem;
+  outline:none;
+  font-size:15px;line-height:1.7;
+  color:var(--text);
+}
+.editor-content:empty::before{
+  content:attr(data-placeholder);
+  color:var(--text3);pointer-events:none;
+}
+.editor-content h2{font-size:20px;font-weight:600;margin:1.25rem 0 .5rem;color:var(--text)}
+.editor-content h3{font-size:17px;font-weight:600;margin:1rem 0 .4rem;color:var(--text)}
+.editor-content p{margin-bottom:.85rem}
+.editor-content ul,
+.editor-content ol{padding-left:1.5rem;margin-bottom:.85rem}
+.editor-content li{margin-bottom:.25rem}
+.editor-content strong{font-weight:600}
+.editor-content em{font-style:italic}
+.editor-content a{color:var(--accent);text-decoration:underline}
+.editor-content blockquote{
+  border-left:3px solid var(--accent);
+  padding:.5rem 1rem;margin:.75rem 0;
+  background:var(--accent-bg);border-radius:0 var(--radius) var(--radius) 0;
+  font-style:italic;color:var(--text2);
+}
+.editor-content pre{
+  background:var(--surface2);border-radius:var(--radius);
+  padding:12px;font-family:var(--mono);font-size:13px;
+  margin:.75rem 0;overflow-x:auto;
+  border:1px solid var(--border);
+}
+.editor-content img{max-width:100%;border-radius:var(--radius);margin:.5rem 0}
+
+.editor-wordcount{
+  padding:6px 1.5rem;
+  font-size:11px;color:var(--text3);font-family:var(--mono);
+  border-top:1px solid var(--border);
+  background:var(--surface);
+  flex-shrink:0;
+  display:flex;gap:1rem;
+}
+
+/* ── SIDEBAR PANEL ────────────────────────────── */
+.panel{overflow-y:auto;background:var(--bg);display:flex;flex-direction:column;gap:0}
+
+.panel-section{
+  background:var(--surface);
+  border-bottom:1px solid var(--border);
+  padding:1rem;
+}
+.panel-section__title{
+  font-size:11px;font-weight:600;text-transform:uppercase;
+  letter-spacing:1px;color:var(--text3);margin-bottom:.75rem;
+  display:flex;align-items:center;justify-content:space-between;
+}
+.panel-section__title button{
+  font-size:11px;color:var(--accent);text-transform:none;letter-spacing:0;font-weight:500;
+}
+
+.field-group{margin-bottom:.75rem}
+.field-group:last-child{margin-bottom:0}
+.field-label{font-size:12px;font-weight:500;color:var(--text2);margin-bottom:4px;display:block}
+.field-input{
+  width:100%;padding:7px 10px;
+  border:1px solid var(--border);border-radius:var(--radius);
+  background:var(--surface);color:var(--text);
+  transition:border-color var(--trans);
+  font-size:13px;
+}
+.field-input:focus{border-color:var(--accent);outline:none}
+.field-input--sm{padding:5px 8px;font-size:12px}
+select.field-input{appearance:auto}
+
+.tag-list{display:flex;flex-wrap:wrap;gap:4px;margin-top:4px}
+.tag{
+  padding:3px 8px;border-radius:99px;font-size:11px;font-weight:500;
+  display:flex;align-items:center;gap:4px;
+  background:var(--surface2);color:var(--text2);border:1px solid var(--border);
+}
+.tag-x{cursor:pointer;color:var(--text3);font-size:12px;line-height:1;padding:0 0 0 2px}
+.tag-x:hover{color:var(--red)}
+.tag-add-wrap{display:flex;gap:4px;margin-top:6px}
+.tag-add-wrap input{flex:1;padding:5px 8px;border:1px solid var(--border);border-radius:var(--radius);font-size:12px;background:var(--surface)}
+.tag-add-wrap input:focus{border-color:var(--accent);outline:none}
+.tag-add-btn{
+  padding:5px 10px;border-radius:var(--radius);
+  background:var(--surface2);border:1px solid var(--border);
+  font-size:12px;color:var(--text2);cursor:pointer;
+  transition:all var(--trans);
+}
+.tag-add-btn:hover{border-color:var(--accent);color:var(--accent)}
+
+.seo-score{
+  display:flex;align-items:center;gap:8px;margin-bottom:.75rem;
+  padding:8px 10px;border-radius:var(--radius);
+  background:var(--green-bg);border:1px solid #BBF7D0;
+}
+.seo-score__bar{flex:1;height:5px;background:#BBF7D0;border-radius:99px;overflow:hidden}
+.seo-score__fill{height:100%;background:var(--green);border-radius:99px;transition:width .4s ease}
+.seo-score__label{font-size:11px;font-weight:600;color:var(--green);min-width:30px;text-align:right}
+
+.img-thumb{
+  width:100%;height:90px;object-fit:cover;border-radius:var(--radius);
+  border:1px solid var(--border);display:block;margin-bottom:6px;
+  background:var(--surface2);
+}
+.img-thumb-placeholder{
+  width:100%;height:90px;border-radius:var(--radius);
+  border:2px dashed var(--border);display:flex;
+  align-items:center;justify-content:center;
+  flex-direction:column;gap:4px;color:var(--text3);
+  font-size:12px;cursor:pointer;margin-bottom:6px;
+  transition:border-color var(--trans),color var(--trans);
+}
+.img-thumb-placeholder:hover{border-color:var(--accent);color:var(--accent)}
+
+/* ── ACTION BAR ───────────────────────────────── */
+.action-bar{
+  padding:.75rem 1rem;
+  border-top:1px solid var(--border);
+  background:var(--surface);
+  flex-shrink:0;
+  display:flex;flex-direction:column;gap:6px;
+}
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;
+  gap:6px;padding:7px 14px;border-radius:var(--radius);
+  font-size:13px;font-weight:500;cursor:pointer;
+  border:1px solid transparent;transition:all var(--trans);
+}
+.btn--primary{background:var(--accent);color:#fff;border-color:var(--accent)}
+.btn--primary:hover{background:#1D55D8}
+.btn--secondary{background:var(--surface);border-color:var(--border);color:var(--text2)}
+.btn--secondary:hover{border-color:var(--border2);color:var(--text)}
+.btn--danger{background:var(--red-bg);color:var(--red);border-color:#FECACA}
+.btn--danger:hover{background:#FEE2E2}
+.btn--full{width:100%}
+.btn--sm{padding:5px 10px;font-size:12px}
+
+/* ── TOAST ────────────────────────────────────── */
+.toast-wrap{
+  position:fixed;bottom:1.5rem;right:1.5rem;
+  display:flex;flex-direction:column;gap:8px;
+  z-index:999;pointer-events:none;
+}
+.toast{
+  display:flex;align-items:center;gap:10px;
+  background:var(--text);color:#fff;
+  padding:10px 16px;border-radius:var(--radius-lg);
+  font-size:13px;box-shadow:var(--shadow-lg);
+  pointer-events:all;
+  animation:slideIn .2s ease;
+}
+.toast.green{background:#166534}
+.toast.red{background:#991B1B}
+.toast.blue{background:#1E40AF}
+@keyframes slideIn{from{transform:translateY(8px);opacity:0}to{transform:translateY(0);opacity:1}}
+@keyframes slideOut{from{opacity:1;transform:translateY(0)}to{opacity:0;transform:translateY(4px)}}
+.toast.out{animation:slideOut .2s ease forwards}
+
+/* ── MODAL ────────────────────────────────────── */
+.modal-backdrop{
+  position:fixed;inset:0;background:rgba(0,0,0,.35);
+  z-index:200;display:flex;align-items:center;justify-content:center;
+  animation:fadeIn .15s ease;
+}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.modal{
+  background:var(--surface);border-radius:var(--radius-lg);
+  box-shadow:var(--shadow-lg);width:90%;max-width:520px;
+  animation:scaleIn .15s ease;border:1px solid var(--border);
+}
+@keyframes scaleIn{from{transform:scale(.97);opacity:0}to{transform:scale(1);opacity:1}}
+.modal-header{
+  padding:1rem 1.25rem;border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;
+}
+.modal-header h2{font-size:16px;font-weight:600}
+.modal-close{
+  width:28px;height:28px;border-radius:var(--radius);
+  display:flex;align-items:center;justify-content:center;
+  color:var(--text2);border:1px solid var(--border);
+  transition:all var(--trans);cursor:pointer;
+}
+.modal-close:hover{background:var(--surface2);color:var(--text)}
+.modal-body{padding:1.25rem;display:flex;flex-direction:column;gap:.85rem}
+.modal-footer{
+  padding:.75rem 1.25rem;border-top:1px solid var(--border);
+  display:flex;justify-content:flex-end;gap:8px;
+}
+
+/* ── DASHBOARD ────────────────────────────────── */
+.dash-grid{
+  display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;
+  padding:1.5rem;
+}
+.stat-card{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--radius-lg);padding:1.1rem 1.25rem;
+}
+.stat-card__label{font-size:12px;color:var(--text2);margin-bottom:6px}
+.stat-card__val{font-size:28px;font-weight:600;color:var(--text)}
+.stat-card__sub{font-size:11px;color:var(--text3);margin-top:3px}
+.stat-card__bar{height:3px;border-radius:99px;margin-top:12px;background:var(--surface2);overflow:hidden}
+.stat-card__bar-fill{height:100%;border-radius:99px}
+
+.recent-section{padding:0 1.5rem 1.5rem}
+.recent-section h2{font-size:14px;font-weight:600;margin-bottom:.75rem;color:var(--text2)}
+
+.activity-list{display:flex;flex-direction:column;gap:4px}
+.activity-item{
+  display:flex;align-items:center;gap:10px;
+  padding:10px 12px;border-radius:var(--radius);
+  background:var(--surface);border:1px solid var(--border);
+  font-size:13px;
+}
+.activity-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.activity-item__text{flex:1;color:var(--text2)}
+.activity-item__text strong{color:var(--text)}
+.activity-item__time{font-size:11px;color:var(--text3);font-family:var(--mono)}
+
+/* ── MEDIA LIBRARY ───────────────────────────── */
+.media-grid{
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));
+  gap:10px;padding:1.25rem 1.5rem;
+}
+.media-item{
+  border:1px solid var(--border);border-radius:var(--radius);
+  overflow:hidden;cursor:pointer;
+  transition:border-color var(--trans),box-shadow var(--trans);
+  background:var(--surface);
+}
+.media-item:hover{border-color:var(--accent);box-shadow:var(--shadow)}
+.media-item.selected{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent-bg)}
+.media-item__img{
+  width:100%;height:90px;object-fit:cover;display:block;
+  background:var(--surface2);
+}
+.media-item__info{padding:6px 8px;font-size:11px;color:var(--text2);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+/* ── PREVIEW VIEW ─────────────────────────────── */
+.preview-wrap{flex:1;overflow-y:auto;background:var(--bg);padding:2rem}
+.preview-frame{
+  max-width:780px;margin:0 auto;
+  background:var(--surface);border-radius:var(--radius-lg);
+  box-shadow:var(--shadow-lg);border:1px solid var(--border);
+  overflow:hidden;
+}
+.preview-frame__bar{
+  background:var(--surface2);padding:10px 1rem;
+  border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px;
+}
+.preview-frame__dots{display:flex;gap:5px}
+.preview-frame__dot{width:10px;height:10px;border-radius:50%}
+.preview-frame__url{
+  flex:1;background:var(--surface);border:1px solid var(--border);
+  border-radius:99px;padding:3px 12px;
+  font-size:11px;font-family:var(--mono);color:var(--text2);
+}
+.preview-content{padding:2rem 2.5rem}
+.preview-content__label{
+  font-size:11px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;
+  color:var(--accent);margin-bottom:.5rem;
+}
+.preview-content h1{
+  font-size:28px;font-weight:700;line-height:1.2;margin-bottom:1rem;
+}
+.preview-content__meta{
+  font-size:12px;color:var(--text2);display:flex;gap:10px;
+  padding-bottom:1rem;margin-bottom:1.5rem;
+  border-bottom:1px solid var(--border);
+}
+.preview-content__body{
+  font-size:15px;line-height:1.75;color:var(--text);
+}
+.preview-content__body h2{font-size:20px;font-weight:600;margin:1.5rem 0 .6rem}
+.preview-content__body p{margin-bottom:.9rem}
+.preview-content__body blockquote{
+  border-left:3px solid var(--accent);padding:.5rem 1rem;
+  background:var(--accent-bg);margin:.75rem 0;
+  border-radius:0 var(--radius) var(--radius) 0;color:var(--text2);font-style:italic;
+}
+
+/* ── EMPTY STATE ──────────────────────────────── */
+.empty-state{
+  flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  color:var(--text3);gap:12px;padding:2rem;text-align:center;
+}
+.empty-state__icon{font-size:36px}
+.empty-state p{font-size:13px;max-width:280px;line-height:1.5}
+
+/* ── RESPONSIVE ───────────────────────────────── */
+@media(max-width:900px){
+  .sidebar{width:200px}
+  .editor-wrap{grid-template-columns:1fr}
+  .panel{display:none}
+  .dash-grid{grid-template-columns:repeat(2,1fr)}
+}
+@media(max-width:640px){
+  :root{--sidebar-w:0px}
+  .sidebar{display:none}
+  .dash-grid{grid-template-columns:1fr 1fr}
+}
+</style>
+</head>
+<body>
+
+<!-- ── TOP BAR ─────────────────────────────── -->
+<header class="topbar">
+  <div class="topbar__logo">
+    <div class="topbar__logo-icon">C</div>
+    CMS
+  </div>
+  <div class="topbar__site">
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+    <select id="siteSelect" onchange="updateSite()">
+      <option>consultoría-e3.com</option>
+      <option>tienda-ecommerce.mx</option>
+      <option>blog-marketing.io</option>
+    </select>
+  </div>
+  <div class="topbar__right">
+    <span class="topbar__env" id="envLabel">● Producción</span>
+    <button class="topbar__notif" title="Notificaciones">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+      <span class="topbar__notif-dot"></span>
+    </button>
+    <div class="topbar__avatar" title="Sergio Martínez">SM</div>
+  </div>
+</header>
+
+<div class="shell">
+
+<!-- ── SIDEBAR ─────────────────────────────── -->
+<nav class="sidebar">
+  <div class="sidebar__section">
+    <div class="sidebar__label">Principal</div>
+    <button class="sidebar__item active" onclick="switchView('dashboard',this)">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+      Dashboard
+    </button>
+    <button class="sidebar__item" onclick="switchView('entries',this)">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+      Entradas
+      <span class="sidebar__badge" id="totalBadge">0</span>
+    </button>
+    <button class="sidebar__item" onclick="switchView('drafts',this)">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+      Borradores
+      <span class="sidebar__badge draft" id="draftBadge">0</span>
+    </button>
+    <button class="sidebar__item" onclick="switchView('media',this)">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+      Medios
+    </button>
+  </div>
+
+  <div class="sidebar__section">
+    <div class="sidebar__label">Tipos de contenido</div>
+    <button class="sidebar__item" onclick="filterType('article',this)">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+      Artículos
+    </button>
+    <button class="sidebar__item" onclick="filterType('page',this)">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+      Páginas
+    </button>
+    <button class="sidebar__item" onclick="filterType('product',this)">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+      Productos
+    </button>
+  </div>
+
+  <div class="sidebar__section">
+    <div class="sidebar__label">Sistema</div>
+    <button class="sidebar__item" onclick="showToast('Ajustes próximamente','blue')">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+      Ajustes
+    </button>
+  </div>
+</nav>
+
+<!-- ── MAIN AREA ────────────────────────────── -->
+<main class="main" id="main">
+
+  <!-- DASHBOARD -->
+  <div class="view active" id="view-dashboard">
+    <div class="list-header">
+      <h1>Dashboard</h1>
+      <div class="list-header__actions">
+        <button class="btn btn--primary btn--sm" onclick="openNewModal()">+ Nueva entrada</button>
+      </div>
+    </div>
+    <div class="dash-grid" id="dashStats"></div>
+    <div class="recent-section">
+      <h2>Actividad reciente</h2>
+      <div class="activity-list" id="activityList"></div>
+    </div>
+  </div>
+
+  <!-- ENTRIES LIST -->
+  <div class="view" id="view-entries">
+    <div class="list-header">
+      <h1 id="listTitle">Todas las entradas</h1>
+      <div class="list-header__actions">
+        <div class="search-box">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+          <input type="text" placeholder="Buscar..." id="searchInput" oninput="renderList()"/>
+        </div>
+        <button class="btn btn--primary btn--sm" onclick="openNewModal()">+ Nueva entrada</button>
+      </div>
+    </div>
+    <div class="filter-bar" id="filterBar">
+      <span style="font-size:12px;color:var(--text2)">Estado:</span>
+      <button class="filter-chip active" onclick="setFilter('all',this)">Todos</button>
+      <button class="filter-chip" onclick="setFilter('published',this)">Publicados</button>
+      <button class="filter-chip" onclick="setFilter('draft',this)">Borradores</button>
+      <button class="filter-chip" onclick="setFilter('review',this)">En revisión</button>
+      <button class="filter-chip" onclick="setFilter('archived',this)">Archivados</button>
+    </div>
+    <div class="content-list" id="contentList"></div>
+  </div>
+
+  <!-- DRAFTS -->
+  <div class="view" id="view-drafts">
+    <div class="list-header"><h1>Borradores</h1>
+      <div class="list-header__actions">
+        <button class="btn btn--primary btn--sm" onclick="openNewModal()">+ Nueva entrada</button>
+      </div>
+    </div>
+    <div class="content-list" id="draftList"></div>
+  </div>
+
+  <!-- MEDIA -->
+  <div class="view" id="view-media">
+    <div class="list-header">
+      <h1>Biblioteca de medios</h1>
+      <div class="list-header__actions">
+        <button class="btn btn--secondary btn--sm" onclick="showToast('Subida de archivos simulada ✓','green')">↑ Subir archivo</button>
+      </div>
+    </div>
+    <div class="media-grid" id="mediaGrid"></div>
+  </div>
+
+  <!-- EDITOR -->
+  <div class="view" id="view-editor">
+    <div class="list-header" style="padding:.75rem 1rem">
+      <button class="btn btn--secondary btn--sm" onclick="switchView('entries', document.querySelector('.sidebar__item:nth-child(2)'))">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+        Volver
+      </button>
+      <span id="editorBreadcrumb" style="font-size:13px;color:var(--text2);margin-left:4px"></span>
+      <div class="list-header__actions" style="gap:6px">
+        <span id="autoSaveLabel" style="font-size:11px;color:var(--text3);font-family:var(--mono)"></span>
+        <button class="btn btn--secondary btn--sm" onclick="openPreview()">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+          Vista previa
+        </button>
+        <button class="btn btn--secondary btn--sm" onclick="saveDraft()">Guardar borrador</button>
+        <button class="btn btn--primary btn--sm" onclick="publishEntry()">Publicar</button>
+      </div>
+    </div>
+    <div class="editor-wrap">
+      <div class="editor-main">
+        <div class="editor-toolbar">
+          <button class="tool-btn" title="Negrita" onclick="execFmt('bold')"><b>B</b></button>
+          <button class="tool-btn" title="Cursiva" onclick="execFmt('italic')"><i>I</i></button>
+          <button class="tool-btn" title="Subrayado" onclick="execFmt('underline')"><u>U</u></button>
+          <div class="toolbar-sep"></div>
+          <button class="tool-btn" title="Encabezado H2" onclick="execFmt('h2')" style="font-size:11px;width:36px">H2</button>
+          <button class="tool-btn" title="Encabezado H3" onclick="execFmt('h3')" style="font-size:11px;width:36px">H3</button>
+          <div class="toolbar-sep"></div>
+          <button class="tool-btn" title="Lista" onclick="execFmt('ul')">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+          </button>
+          <button class="tool-btn" title="Cita" onclick="execFmt('blockquote')">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21c3 0 7-1 7-8V5c0-1.25-.756-2.017-2-2H4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2 1 0 1 0 1 1v1c0 1-1 2-2 2s-1 .008-1 1.031V20c0 1 0 1 1 1z"/><path d="M15 21c3 0 7-1 7-8V5c0-1.25-.757-2.017-2-2h-4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2h.75c0 2.25.25 4-2.75 4v3c0 1 0 1 1 1z"/></svg>
+          </button>
+          <button class="tool-btn" title="Código" onclick="execFmt('code')">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+          </button>
+          <button class="tool-btn" title="Link" onclick="execFmt('link')">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+          </button>
+          <div class="toolbar-sep"></div>
+          <button class="tool-btn" title="Imagen" onclick="insertImage()">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+          </button>
+          <button class="tool-btn" title="Deshacer" onclick="document.execCommand('undo')">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-4.67"/></svg>
+          </button>
+          <button class="tool-btn" title="Rehacer" onclick="document.execCommand('redo')">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-.49-4.67"/></svg>
+          </button>
+        </div>
+        <div class="editor-title-wrap">
+          <textarea class="editor-title-input" id="editorTitle" rows="1" placeholder="Título de la entrada..."
+            oninput="updateSlug();autoResize(this);scheduleAutoSave()"></textarea>
+          <div class="editor-slug">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+            <span id="editorSlug">/entradas/</span>
+          </div>
+        </div>
+        <div class="editor-body">
+          <div class="editor-content" id="editorContent" contenteditable="true"
+            data-placeholder="Empieza a escribir tu contenido aquí..."
+            oninput="scheduleAutoSave();updateWordCount()"></div>
+        </div>
+        <div class="editor-wordcount">
+          <span id="wordCount">0 palabras</span>
+          <span id="charCount">0 caracteres</span>
+          <span id="readTime">~0 min de lectura</span>
+        </div>
+      </div>
+
+      <!-- PANEL -->
+      <aside class="panel">
+        <div class="panel-section">
+          <div class="panel-section__title">Estado de publicación</div>
+          <div class="field-group">
+            <label class="field-label">Estado</label>
+            <select class="field-input" id="entryStatus">
+              <option value="draft">Borrador</option>
+              <option value="review">En revisión</option>
+              <option value="published">Publicado</option>
+              <option value="archived">Archivado</option>
+            </select>
+          </div>
+          <div class="field-group">
+            <label class="field-label">Fecha de publicación</label>
+            <input type="datetime-local" class="field-input" id="pubDate"/>
+          </div>
+          <div class="field-group">
+            <label class="field-label">Autor</label>
+            <select class="field-input" id="entryAuthor">
+              <option>Sergio Martínez</option>
+              <option>Ana García</option>
+              <option>Luis Torres</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="panel-section">
+          <div class="panel-section__title">Tipo de contenido</div>
+          <div class="field-group">
+            <label class="field-label">Tipo</label>
+            <select class="field-input" id="entryType">
+              <option value="article">📄 Artículo</option>
+              <option value="page">📃 Página</option>
+              <option value="product">🛍 Producto</option>
+            </select>
+          </div>
+          <div class="field-group">
+            <label class="field-label">Categoría</label>
+            <select class="field-input" id="entryCategory">
+              <option>Marketing Digital</option>
+              <option>Ecommerce</option>
+              <option>SEO</option>
+              <option>Redes Sociales</option>
+              <option>General</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="panel-section">
+          <div class="panel-section__title">Imagen destacada</div>
+          <div class="img-thumb-placeholder" id="featuredImgWrap" onclick="pickFeaturedImage()">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+            <span>Seleccionar imagen</span>
+          </div>
+          <button class="btn btn--secondary btn--sm btn--full" style="font-size:11px" onclick="pickFeaturedImage()">Elegir de la biblioteca</button>
+        </div>
+
+        <div class="panel-section">
+          <div class="panel-section__title">Etiquetas</div>
+          <div class="tag-list" id="tagList"></div>
+          <div class="tag-add-wrap">
+            <input type="text" id="tagInput" placeholder="Nueva etiqueta..." onkeydown="if(event.key==='Enter')addTag()"/>
+            <button class="tag-add-btn" onclick="addTag()">+</button>
+          </div>
+        </div>
+
+        <div class="panel-section">
+          <div class="panel-section__title">SEO</div>
+          <div class="seo-score">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+            <div class="seo-score__bar"><div class="seo-score__fill" id="seoBar" style="width:0%"></div></div>
+            <span class="seo-score__label" id="seoLabel">0%</span>
+          </div>
+          <div class="field-group">
+            <label class="field-label">Meta título</label>
+            <input type="text" class="field-input field-input--sm" id="metaTitle" placeholder="Título para buscadores..." oninput="updateSeo()"/>
+          </div>
+          <div class="field-group">
+            <label class="field-label">Meta descripción</label>
+            <textarea class="field-input field-input--sm" id="metaDesc" rows="2" placeholder="Descripción para buscadores..." oninput="updateSeo()" style="resize:none"></textarea>
+          </div>
+          <div class="field-group">
+            <label class="field-label">Keyword principal</label>
+            <input type="text" class="field-input field-input--sm" id="metaKeyword" placeholder="ej: marketing digital" oninput="updateSeo()"/>
+          </div>
+        </div>
+
+        <div class="action-bar">
+          <button class="btn btn--primary btn--full" onclick="publishEntry()">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+            Publicar entrada
+          </button>
+          <button class="btn btn--secondary btn--full" onclick="saveDraft()">Guardar borrador</button>
+          <button class="btn btn--danger btn--full btn--sm" id="deleteBtn" onclick="deleteCurrentEntry()">Eliminar entrada</button>
+        </div>
+      </aside>
+    </div>
+  </div>
+
+  <!-- PREVIEW -->
+  <div class="view" id="view-preview">
+    <div class="list-header">
+      <button class="btn btn--secondary btn--sm" onclick="switchView('editor',null)">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+        Volver al editor
+      </button>
+      <span style="font-size:13px;color:var(--text2);margin-left:4px">Vista previa</span>
+      <div class="list-header__actions">
+        <button class="btn btn--primary btn--sm" onclick="publishEntry()">Publicar</button>
+      </div>
+    </div>
+    <div class="preview-wrap">
+      <div class="preview-frame">
+        <div class="preview-frame__bar">
+          <div class="preview-frame__dots">
+            <div class="preview-frame__dot" style="background:#FF5F57"></div>
+            <div class="preview-frame__dot" style="background:#FEBC2E"></div>
+            <div class="preview-frame__dot" style="background:#28C840"></div>
+          </div>
+          <div class="preview-frame__url" id="previewUrl">/entradas/</div>
+        </div>
+        <div class="preview-content" id="previewContent"></div>
+      </div>
+    </div>
+  </div>
+
+</main>
+</div>
+
+<!-- TOAST -->
+<div class="toast-wrap" id="toastWrap"></div>
+
+<!-- MODAL: Nueva entrada -->
+<div class="modal-backdrop" id="newModal" style="display:none" onclick="if(event.target===this)closeModal('newModal')">
+  <div class="modal">
+    <div class="modal-header">
+      <h2>Nueva entrada</h2>
+      <button class="modal-close" onclick="closeModal('newModal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="field-group">
+        <label class="field-label">Título *</label>
+        <input type="text" class="field-input" id="newTitle" placeholder="Título de la entrada..."/>
+      </div>
+      <div class="field-group">
+        <label class="field-label">Tipo de contenido</label>
+        <select class="field-input" id="newType">
+          <option value="article">📄 Artículo</option>
+          <option value="page">📃 Página</option>
+          <option value="product">🛍 Producto</option>
+        </select>
+      </div>
+      <div class="field-group">
+        <label class="field-label">Categoría</label>
+        <select class="field-input" id="newCategory">
+          <option>Marketing Digital</option>
+          <option>Ecommerce</option>
+          <option>SEO</option>
+          <option>Redes Sociales</option>
+          <option>General</option>
+        </select>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn--secondary" onclick="closeModal('newModal')">Cancelar</button>
+      <button class="btn btn--primary" onclick="createEntry()">Crear y editar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: Media picker -->
+<div class="modal-backdrop" id="mediaModal" style="display:none" onclick="if(event.target===this)closeModal('mediaModal')">
+  <div class="modal" style="max-width:620px">
+    <div class="modal-header">
+      <h2>Biblioteca de medios</h2>
+      <button class="modal-close" onclick="closeModal('mediaModal')">✕</button>
+    </div>
+    <div class="modal-body" style="padding:.75rem">
+      <div id="mediaPickerGrid" style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn--secondary" onclick="closeModal('mediaModal')">Cancelar</button>
+      <button class="btn btn--primary" onclick="confirmMediaPick()">Seleccionar</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── DATA ──────────────────────────────────────
+const MEDIA = [
+  {id:'m1',url:'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=300&q=70',name:'dashboard-analytics.jpg'},
+  {id:'m2',url:'https://images.unsplash.com/photo-1611162617213-7d7a39e9b1d7?w=300&q=70',name:'social-media.jpg'},
+  {id:'m3',url:'https://images.unsplash.com/photo-1504868584819-f8e8b4b6d7e3?w=300&q=70',name:'estrategia.jpg'},
+  {id:'m4',url:'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=300&q=70',name:'growth-chart.jpg'},
+  {id:'m5',url:'https://images.unsplash.com/photo-1563986768609-322da13575f3?w=300&q=70',name:'ecommerce.jpg'},
+  {id:'m6',url:'https://images.unsplash.com/photo-1529720317453-c8da503f2051?w=300&q=70',name:'seo-concept.jpg'},
+  {id:'m7',url:'https://images.unsplash.com/photo-1432888498266-38ffec3eaf0a?w=300&q=70',name:'content-writing.jpg'},
+  {id:'m8',url:'https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=300&q=70',name:'team-work.jpg'},
+];
+
+const TYPE_ICONS = { article:'📄', page:'📃', product:'🛍' };
+const TYPE_COLORS = { article:'#EEF3FD', page:'#F0FDF4', product:'#FFFBEB' };
+
+let entries = [
+  {id:1,title:'Guía completa de SEO on-page para ecommerce',type:'article',category:'SEO',status:'published',author:'Sergio Martínez',date:'2025-06-10',tags:['SEO','Ecommerce'],content:'<h2>Introducción al SEO on-page</h2><p>El SEO on-page es el conjunto de técnicas que se aplican directamente en el contenido y la estructura de cada página de tu sitio web para mejorar su posicionamiento en los motores de búsqueda.</p><p>A diferencia del SEO off-page, que depende de factores externos como los backlinks, el SEO on-page está completamente bajo tu control.</p><blockquote>Un sitio bien optimizado es la base de cualquier estrategia de marketing digital exitosa.</blockquote><h2>Elementos clave</h2><p>Los elementos más importantes del SEO on-page incluyen: títulos, meta descripciones, estructura de encabezados, velocidad de carga y experiencia móvil.</p>',metaTitle:'SEO on-page para ecommerce: guía 2025',metaDesc:'Aprende las técnicas esenciales de SEO on-page para mejorar el posicionamiento de tu tienda online.',metaKeyword:'SEO ecommerce',featuredImg:'https://images.unsplash.com/photo-1432888498266-38ffec3eaf0a?w=300&q=70'},
+  {id:2,title:'5 estrategias de email marketing que aumentan conversiones',type:'article',category:'Marketing Digital',status:'published',author:'Ana García',date:'2025-06-08',tags:['Email','Conversión'],content:'<p>El email marketing sigue siendo uno de los canales con mejor retorno de inversión en marketing digital.</p><h2>Segmentación avanzada</h2><p>La clave del éxito está en enviar el mensaje correcto a la persona correcta en el momento adecuado.</p>',metaTitle:'Email marketing: 5 estrategias para más conversiones',metaDesc:'Estrategias probadas de email marketing para incrementar tus tasas de conversión.',metaKeyword:'email marketing',featuredImg:'https://images.unsplash.com/photo-1611162617213-7d7a39e9b1d7?w=300&q=70'},
+  {id:3,title:'Página de servicios — Consultoría E3',type:'page',category:'General',status:'published',author:'Sergio Martínez',date:'2025-06-05',tags:['Servicios'],content:'<p>Ofrecemos soluciones integrales de marketing digital y ecommerce para empresas que buscan crecer en el entorno digital.</p><h2>Nuestros servicios</h2><p>Desde estrategia hasta implementación, cubrimos todo el ciclo de vida de tu presencia digital.</p>',metaTitle:'Servicios de Consultoría E3',metaDesc:'Consultoría en marketing digital y ecommerce con 11 años de experiencia.',metaKeyword:'consultoría marketing digital',featuredImg:''},
+  {id:4,title:'Cómo configurar Google Shopping para tu tienda',type:'article',category:'Ecommerce',status:'draft',author:'Luis Torres',date:'2025-06-12',tags:['Google','Shopping','Ecommerce'],content:'<p>Google Shopping es una de las herramientas más poderosas para tiendas online. En este artículo veremos cómo configurarla desde cero.</p>',metaTitle:'',metaDesc:'',metaKeyword:'',featuredImg:'https://images.unsplash.com/photo-1563986768609-322da13575f3?w=300&q=70'},
+  {id:5,title:'Tendencias de redes sociales Q3 2025',type:'article',category:'Redes Sociales',status:'draft',author:'Sergio Martínez',date:'2025-06-13',tags:['Redes Sociales','Tendencias'],content:'<p>El panorama de las redes sociales evoluciona constantemente. Estas son las tendencias que marcarán el tercer trimestre de 2025.</p>',metaTitle:'',metaDesc:'',metaKeyword:'',featuredImg:''},
+  {id:6,title:'Producto: Auditoría SEO completa',type:'product',category:'SEO',status:'review',author:'Ana García',date:'2025-06-11',tags:['SEO','Producto'],content:'<p>Servicio de auditoría SEO completa para tu sitio web. Incluye análisis técnico, de contenido y de backlinks.</p>',metaTitle:'Auditoría SEO completa — Consultoría E3',metaDesc:'Descubre los problemas que frenan tu posicionamiento con nuestra auditoría SEO profesional.',metaKeyword:'auditoría SEO',featuredImg:'https://images.unsplash.com/photo-1432888498266-38ffec3eaf0a?w=300&q=70'},
+];
+
+let nextId = 7;
+let activeView = 'dashboard';
+let currentEntryId = null;
+let currentFilter = 'all';
+let currentTypeFilter = null;
+let autoSaveTimer = null;
+let selectedMedia = null;
+let pickerTarget = null;
+
+// ── UTILS ─────────────────────────────────────
+function slugify(t){ return t.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,''); }
+function formatDate(d){ return new Date(d).toLocaleDateString('es-MX',{day:'2-digit',month:'short',year:'numeric'}); }
+function wordCount(el){ const t=el.innerText||''; return t.trim().split(/\s+/).filter(Boolean).length; }
+function charCount(el){ return (el.innerText||'').length; }
+
+// ── TOAST ─────────────────────────────────────
+function showToast(msg, type=''){
+  const wrap = document.getElementById('toastWrap');
+  const t = document.createElement('div');
+  t.className = 'toast'+(type?' '+type:'');
+  t.textContent = msg;
+  wrap.appendChild(t);
+  setTimeout(()=>{ t.classList.add('out'); setTimeout(()=>t.remove(),220); },2800);
+}
+
+// ── MODAL ─────────────────────────────────────
+function openNewModal(){ document.getElementById('newModal').style.display='flex'; setTimeout(()=>document.getElementById('newTitle').focus(),50); }
+function closeModal(id){ document.getElementById(id).style.display='none'; }
+document.addEventListener('keydown',e=>{ if(e.key==='Escape'){ document.querySelectorAll('.modal-backdrop').forEach(m=>m.style.display='none'); }});
+
+// ── VIEW SWITCHING ────────────────────────────
+function switchView(name, sidebarEl){
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  const view = document.getElementById('view-'+name);
+  if(view) view.classList.add('active');
+  activeView = name;
+  if(sidebarEl){
+    document.querySelectorAll('.sidebar__item').forEach(i=>i.classList.remove('active'));
+    sidebarEl.classList.add('active');
+  }
+  if(name==='dashboard') renderDashboard();
+  if(name==='entries'||name==='drafts') renderList();
+  if(name==='media') renderMediaLibrary();
+}
+
+// ── SITE SELECT ───────────────────────────────
+function updateSite(){ showToast('Sitio cambiado · '+document.getElementById('siteSelect').value,'blue'); }
+
+// ── DASHBOARD ─────────────────────────────────
+function renderDashboard(){
+  const pub = entries.filter(e=>e.status==='published').length;
+  const draft = entries.filter(e=>e.status==='draft').length;
+  const rev = entries.filter(e=>e.status==='review').length;
+  document.getElementById('dashStats').innerHTML=`
+    <div class="stat-card"><div class="stat-card__label">Total entradas</div><div class="stat-card__val">${entries.length}</div><div class="stat-card__sub">En este sitio</div><div class="stat-card__bar"><div class="stat-card__bar-fill" style="width:100%;background:var(--accent)"></div></div></div>
+    <div class="stat-card"><div class="stat-card__label">Publicadas</div><div class="stat-card__val">${pub}</div><div class="stat-card__sub">Visibles en el sitio</div><div class="stat-card__bar"><div class="stat-card__bar-fill" style="width:${Math.round(pub/entries.length*100)}%;background:var(--green)"></div></div></div>
+    <div class="stat-card"><div class="stat-card__label">Borradores</div><div class="stat-card__val">${draft}</div><div class="stat-card__sub">Sin publicar</div><div class="stat-card__bar"><div class="stat-card__bar-fill" style="width:${Math.round(draft/entries.length*100)}%;background:var(--amber)"></div></div></div>
+    <div class="stat-card"><div class="stat-card__label">En revisión</div><div class="stat-card__val">${rev}</div><div class="stat-card__sub">Pendientes de aprobación</div><div class="stat-card__bar"><div class="stat-card__bar-fill" style="width:${Math.round(rev/entries.length*100)}%;background:var(--accent)"></div></div></div>
+  `;
+  const recent = [...entries].sort((a,b)=>b.id-a.id).slice(0,5);
+  const colors={published:'var(--green)',draft:'var(--amber)',review:'var(--accent)',archived:'var(--text3)'};
+  document.getElementById('activityList').innerHTML=recent.map(e=>`
+    <div class="activity-item">
+      <div class="activity-dot" style="background:${colors[e.status]}"></div>
+      <span class="activity-item__text">${TYPE_ICONS[e.type]} <strong>${e.title}</strong> — ${e.status==='published'?'publicado':e.status==='draft'?'borrador':e.status==='review'?'en revisión':'archivado'}</span>
+      <span class="activity-item__time">${formatDate(e.date)}</span>
+    </div>
+  `).join('');
+  updateBadges();
+}
+
+function updateBadges(){
+  document.getElementById('totalBadge').textContent=entries.length;
+  document.getElementById('draftBadge').textContent=entries.filter(e=>e.status==='draft').length;
+}
+
+// ── ENTRY LIST ────────────────────────────────
+function setFilter(f, el){
+  currentFilter=f; currentTypeFilter=null;
+  document.querySelectorAll('.filter-chip').forEach(c=>c.classList.remove('active'));
+  el.classList.add('active');
+  renderList();
+}
+
+function filterType(t, el){
+  currentTypeFilter=t; currentFilter='all';
+  switchView('entries', el);
+  document.getElementById('listTitle').textContent = t==='article'?'Artículos':t==='page'?'Páginas':'Productos';
+  document.querySelectorAll('.filter-chip').forEach(c=>c.classList.remove('active'));
+  document.querySelector('.filter-chip').classList.add('active');
+}
+
+function renderList(){
+  updateBadges();
+  const q=(document.getElementById('searchInput')||{}).value||'';
+  let data=entries;
+  if(currentTypeFilter) data=data.filter(e=>e.type===currentTypeFilter);
+  if(activeView==='drafts') data=data.filter(e=>e.status==='draft');
+  if(currentFilter!=='all') data=data.filter(e=>e.status===currentFilter);
+  if(q) data=data.filter(e=>e.title.toLowerCase().includes(q.toLowerCase()));
+  const target = activeView==='drafts'?'draftList':'contentList';
+  if(!data.length){
+    document.getElementById(target).innerHTML='<div class="empty-state"><div class="empty-state__icon">📭</div><p>No hay entradas que coincidan con los filtros seleccionados.</p><button class="btn btn--primary btn--sm" onclick="openNewModal()">+ Nueva entrada</button></div>';
+    return;
+  }
+  document.getElementById(target).innerHTML=data.map(e=>`
+    <div class="entry-card" onclick="openEditor(${e.id})">
+      <div class="entry-card__type" style="background:${TYPE_COLORS[e.type]}">${TYPE_ICONS[e.type]}</div>
+      <div class="entry-card__body">
+        <div class="entry-card__title">${e.title}</div>
+        <div class="entry-card__meta">
+          <span>${e.category}</span>
+          <span class="entry-card__meta-dot"></span>
+          <span>${e.author}</span>
+          <span class="entry-card__meta-dot"></span>
+          <span>${formatDate(e.date)}</span>
+        </div>
+      </div>
+      <div class="entry-card__right">
+        <span class="status-badge ${e.status}">${e.status==='published'?'Publicado':e.status==='draft'?'Borrador':e.status==='review'?'En revisión':'Archivado'}</span>
+        <button class="entry-card__action" title="Editar" onclick="event.stopPropagation();openEditor(${e.id})">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+        </button>
+      </div>
+    </div>
+  `).join('');
+}
+
+// ── MEDIA LIBRARY ─────────────────────────────
+function renderMediaLibrary(){
+  document.getElementById('mediaGrid').innerHTML=MEDIA.map(m=>`
+    <div class="media-item" onclick="toggleMediaSelect('${m.id}',this)">
+      <img class="media-item__img" src="${m.url}" alt="${m.name}" loading="lazy"/>
+      <div class="media-item__info" title="${m.name}">${m.name}</div>
+    </div>
+  `).join('');
+}
+
+function toggleMediaSelect(id, el){
+  document.querySelectorAll('#mediaGrid .media-item').forEach(i=>i.classList.remove('selected'));
+  el.classList.add('selected');
+  selectedMedia=MEDIA.find(m=>m.id===id);
+}
+
+function pickFeaturedImage(){ 
+  pickerTarget='featured';
+  renderMediaPickerModal();
+  document.getElementById('mediaModal').style.display='flex';
+}
+
+function insertImage(){
+  pickerTarget='editor';
+  renderMediaPickerModal();
+  document.getElementById('mediaModal').style.display='flex';
+}
+
+function renderMediaPickerModal(){
+  selectedMedia=null;
+  document.getElementById('mediaPickerGrid').innerHTML=MEDIA.map(m=>`
+    <div class="media-item" onclick="toggleMediaPickerSelect('${m.id}',this)" style="cursor:pointer">
+      <img class="media-item__img" src="${m.url}" alt="${m.name}" loading="lazy"/>
+      <div class="media-item__info" title="${m.name}">${m.name}</div>
+    </div>
+  `).join('');
+}
+
+function toggleMediaPickerSelect(id,el){
+  document.querySelectorAll('#mediaPickerGrid .media-item').forEach(i=>i.classList.remove('selected'));
+  el.classList.add('selected');
+  selectedMedia=MEDIA.find(m=>m.id===id);
+}
+
+function confirmMediaPick(){
+  if(!selectedMedia){ showToast('Selecciona una imagen primero',''); return; }
+  if(pickerTarget==='featured'){
+    const wrap=document.getElementById('featuredImgWrap');
+    wrap.innerHTML=`<img src="${selectedMedia.url}" style="width:100%;height:90px;object-fit:cover;border-radius:var(--radius);display:block;cursor:pointer" onclick="pickFeaturedImage()" alt="Imagen destacada"/>`;
+    wrap.classList.remove('img-thumb-placeholder');
+    const entry=entries.find(e=>e.id===currentEntryId);
+    if(entry) entry.featuredImg=selectedMedia.url;
+    showToast('Imagen destacada actualizada ✓','green');
+  } else if(pickerTarget==='editor'){
+    document.getElementById('editorContent').focus();
+    document.execCommand('insertHTML',false,`<img src="${selectedMedia.url}" alt="${selectedMedia.name}" style="max-width:100%;border-radius:6px;margin:.5rem 0"/>`);
+    showToast('Imagen insertada ✓','green');
+  }
+  closeModal('mediaModal');
+  scheduleAutoSave();
+}
+
+// ── EDITOR ────────────────────────────────────
+function openEditor(id){
+  currentEntryId=id;
+  const e=entries.find(x=>x.id===id);
+  if(!e) return;
+
+  document.getElementById('editorTitle').value=e.title;
+  autoResize(document.getElementById('editorTitle'));
+  document.getElementById('editorContent').innerHTML=e.content||'';
+  document.getElementById('editorSlug').innerHTML='/entradas/<span>'+slugify(e.title||'')+'</span>';
+  document.getElementById('editorBreadcrumb').textContent='/ '+e.title;
+  document.getElementById('entryStatus').value=e.status;
+  document.getElementById('entryType').value=e.type;
+  document.getElementById('entryCategory').value=e.category;
+  document.getElementById('entryAuthor').value=e.author;
+
+  const now=new Date(e.date); now.setHours(9,0);
+  document.getElementById('pubDate').value=now.toISOString().slice(0,16);
+  document.getElementById('metaTitle').value=e.metaTitle||'';
+  document.getElementById('metaDesc').value=e.metaDesc||'';
+  document.getElementById('metaKeyword').value=e.metaKeyword||'';
+
+  const wrap=document.getElementById('featuredImgWrap');
+  if(e.featuredImg){
+    wrap.innerHTML=`<img src="${e.featuredImg}" style="width:100%;height:90px;object-fit:cover;border-radius:var(--radius);display:block;cursor:pointer" onclick="pickFeaturedImage()" alt="Imagen destacada"/>`;
+    wrap.className='img-thumb-placeholder';
+  } else {
+    wrap.innerHTML='<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg><span>Seleccionar imagen</span>';
+    wrap.className='img-thumb-placeholder';
+  }
+
+  renderTagList(e.tags||[]);
+  updateWordCount();
+  updateSeo();
+  document.getElementById('autoSaveLabel').textContent='';
+  switchView('editor',null);
+}
+
+function saveCurrentToMemory(){
+  const e=entries.find(x=>x.id===currentEntryId);
+  if(!e) return;
+  e.title=document.getElementById('editorTitle').value;
+  e.content=document.getElementById('editorContent').innerHTML;
+  e.status=document.getElementById('entryStatus').value;
+  e.type=document.getElementById('entryType').value;
+  e.category=document.getElementById('entryCategory').value;
+  e.author=document.getElementById('entryAuthor').value;
+  e.metaTitle=document.getElementById('metaTitle').value;
+  e.metaDesc=document.getElementById('metaDesc').value;
+  e.metaKeyword=document.getElementById('metaKeyword').value;
+}
+
+function scheduleAutoSave(){
+  clearTimeout(autoSaveTimer);
+  document.getElementById('autoSaveLabel').textContent='Guardando...';
+  autoSaveTimer=setTimeout(()=>{
+    saveCurrentToMemory();
+    const now=new Date();
+    document.getElementById('autoSaveLabel').textContent='Guardado ' + now.toLocaleTimeString('es-MX',{hour:'2-digit',minute:'2-digit'});
+  },1200);
+}
+
+function saveDraft(){
+  saveCurrentToMemory();
+  const e=entries.find(x=>x.id===currentEntryId);
+  if(e) e.status='draft';
+  document.getElementById('entryStatus').value='draft';
+  updateBadges();
+  showToast('Borrador guardado ✓','green');
+  document.getElementById('autoSaveLabel').textContent='Guardado ahora';
+}
+
+function publishEntry(){
+  saveCurrentToMemory();
+  const e=entries.find(x=>x.id===currentEntryId);
+  if(e){ e.status='published'; e.date=new Date().toISOString().slice(0,10); }
+  document.getElementById('entryStatus').value='published';
+  updateBadges();
+  showToast('Entrada publicada ✓','green');
+  document.getElementById('autoSaveLabel').textContent='Publicado ahora';
+}
+
+function deleteCurrentEntry(){
+  if(!confirm('¿Eliminar esta entrada? Esta acción no se puede deshacer.')) return;
+  entries=entries.filter(e=>e.id!==currentEntryId);
+  currentEntryId=null;
+  updateBadges();
+  showToast('Entrada eliminada','red');
+  switchView('entries', document.querySelectorAll('.sidebar__item')[1]);
+}
+
+function openPreview(){
+  saveCurrentToMemory();
+  const e=entries.find(x=>x.id===currentEntryId);
+  if(!e) return;
+  const slug=slugify(e.title||'entrada');
+  document.getElementById('previewUrl').textContent='/entradas/'+slug;
+  const tags=e.tags&&e.tags.length?e.tags.map(t=>`<span style="background:var(--accent-bg);color:var(--accent);padding:2px 8px;border-radius:99px;font-size:11px;font-weight:500">${t}</span>`).join(' '):'';
+  document.getElementById('previewContent').innerHTML=`
+    <div class="preview-content__label">${e.category}</div>
+    <h1>${e.title||'Sin título'}</h1>
+    <div class="preview-content__meta">
+      <span>Por ${e.author}</span>
+      <span>·</span>
+      <span>${formatDate(e.date)}</span>
+      <span>·</span>
+      <span>${TYPE_ICONS[e.type]} ${e.type==='article'?'Artículo':e.type==='page'?'Página':'Producto'}</span>
+    </div>
+    ${e.featuredImg?`<img src="${e.featuredImg}" style="width:100%;height:200px;object-fit:cover;border-radius:var(--radius);margin-bottom:1.5rem" alt="${e.title}"/>`:''}
+    ${tags?`<div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:1.25rem">${tags}</div>`:''}
+    <div class="preview-content__body">${e.content||'<p style="color:var(--text3)">Sin contenido todavía.</p>'}</div>
+  `;
+  switchView('preview',null);
+}
+
+// ── SLUG ──────────────────────────────────────
+function updateSlug(){
+  const t=document.getElementById('editorTitle').value;
+  document.getElementById('editorSlug').innerHTML='/entradas/<span>'+slugify(t)+'</span>';
+  document.getElementById('editorBreadcrumb').textContent='/ '+t;
+}
+
+// ── WORD COUNT ────────────────────────────────
+function updateWordCount(){
+  const el=document.getElementById('editorContent');
+  const wc=wordCount(el), cc=charCount(el), rt=Math.max(1,Math.ceil(wc/200));
+  document.getElementById('wordCount').textContent=wc+' palabras';
+  document.getElementById('charCount').textContent=cc+' caracteres';
+  document.getElementById('readTime').textContent='~'+rt+' min de lectura';
+}
+
+// ── AUTO RESIZE TEXTAREA ──────────────────────
+function autoResize(el){ el.style.height='auto'; el.style.height=el.scrollHeight+'px'; }
+
+// ── TAGS ──────────────────────────────────────
+function renderTagList(tags){
+  document.getElementById('tagList').innerHTML=tags.map(t=>`
+    <span class="tag">${t}<span class="tag-x" onclick="removeTag('${t}')">×</span></span>
+  `).join('');
+}
+function addTag(){
+  const input=document.getElementById('tagInput');
+  const val=input.value.trim();
+  if(!val) return;
+  const e=entries.find(x=>x.id===currentEntryId);
+  if(!e) return;
+  if(!e.tags) e.tags=[];
+  if(!e.tags.includes(val)) e.tags.push(val);
+  renderTagList(e.tags);
+  input.value='';
+  scheduleAutoSave();
+}
+function removeTag(t){
+  const e=entries.find(x=>x.id===currentEntryId);
+  if(!e||!e.tags) return;
+  e.tags=e.tags.filter(tag=>tag!==t);
+  renderTagList(e.tags);
+  scheduleAutoSave();
+}
+
+// ── SEO SCORE ─────────────────────────────────
+function updateSeo(){
+  let score=0;
+  const title=document.getElementById('metaTitle').value;
+  const desc=document.getElementById('metaDesc').value;
+  const kw=document.getElementById('metaKeyword').value;
+  const content=document.getElementById('editorContent').innerText||'';
+  if(title.length>20 && title.length<70) score+=35;
+  else if(title.length>5) score+=15;
+  if(desc.length>50 && desc.length<160) score+=35;
+  else if(desc.length>10) score+=15;
+  if(kw && content.toLowerCase().includes(kw.toLowerCase())) score+=30;
+  else if(kw) score+=10;
+  document.getElementById('seoBar').style.width=score+'%';
+  document.getElementById('seoLabel').textContent=score+'%';
+  const wrap=document.querySelector('.seo-score');
+  if(score>=70){wrap.style.background='var(--green-bg)';wrap.style.borderColor='#BBF7D0';document.getElementById('seoLabel').style.color='var(--green)';}
+  else if(score>=40){wrap.style.background='var(--amber-bg)';wrap.style.borderColor='#FDE68A';document.getElementById('seoLabel').style.color='var(--amber)';}
+  else{wrap.style.background='var(--red-bg)';wrap.style.borderColor='#FECACA';document.getElementById('seoLabel').style.color='var(--red)';}
+}
+
+// ── FORMAT ────────────────────────────────────
+function execFmt(cmd){
+  const ed=document.getElementById('editorContent');
+  ed.focus();
+  switch(cmd){
+    case 'bold': document.execCommand('bold'); break;
+    case 'italic': document.execCommand('italic'); break;
+    case 'underline': document.execCommand('underline'); break;
+    case 'h2': document.execCommand('formatBlock',false,'H2'); break;
+    case 'h3': document.execCommand('formatBlock',false,'H3'); break;
+    case 'ul': document.execCommand('insertUnorderedList'); break;
+    case 'blockquote': document.execCommand('formatBlock',false,'BLOCKQUOTE'); break;
+    case 'code': document.execCommand('formatBlock',false,'PRE'); break;
+    case 'link':
+      const url=prompt('URL del enlace:');
+      if(url) document.execCommand('createLink',false,url);
+      break;
+  }
+  scheduleAutoSave();
+}
+
+// ── CREATE ENTRY ──────────────────────────────
+function createEntry(){
+  const title=document.getElementById('newTitle').value.trim();
+  if(!title){ showToast('El título es obligatorio','red'); return; }
+  const entry={
+    id:nextId++,
+    title,
+    type:document.getElementById('newType').value,
+    category:document.getElementById('newCategory').value,
+    status:'draft',
+    author:'Sergio Martínez',
+    date:new Date().toISOString().slice(0,10),
+    tags:[],content:'',
+    metaTitle:'',metaDesc:'',metaKeyword:'',featuredImg:''
+  };
+  entries.unshift(entry);
+  closeModal('newModal');
+  document.getElementById('newTitle').value='';
+  showToast('Entrada creada ✓','green');
+  openEditor(entry.id);
+}
+
+// ── INIT ──────────────────────────────────────
+renderDashboard();
+</script>
+</body>
+</html>
