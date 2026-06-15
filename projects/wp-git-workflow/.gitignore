@@ -1,0 +1,56 @@
+# ─── WordPress Core (no versionar) ───────────────────────────────
+wp-admin/
+wp-includes/
+wp-*.php
+xmlrpc.php
+license.txt
+readme.html
+index.php
+
+# ─── Uploads (no versionar archivos de medios) ────────────────────
+wp-content/uploads/
+
+# ─── Plugins (instalar via WP CLI o composer, no versionar) ──────
+wp-content/plugins/
+!wp-content/plugins/.gitkeep
+
+# ─── Tema padre (no versionar, solo el hijo) ──────────────────────
+wp-content/themes/twentytwentyfour/
+wp-content/themes/twentytwentythree/
+
+# ─── Archivos de configuración con datos sensibles ────────────────
+wp-config.php
+wp-config-local.php
+.env
+.env.local
+
+# ─── Respaldos (no subir al repo) ─────────────────────────────────
+backups/*.sql
+backups/*.sql.gz
+backups/*.zip
+
+# ─── Node / NPM ───────────────────────────────────────────────────
+node_modules/
+npm-debug.log*
+package-lock.json
+
+# ─── Caché y compilados ───────────────────────────────────────────
+dist/
+.cache/
+*.map
+
+# ─── Sistema operativo ────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ─── IDEs ─────────────────────────────────────────────────────────
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# ─── ddev (solo incluir config, no estado) ────────────────────────
+.ddev/.gitignore
+.ddev/db_snapshots/
+.ddev/sequelpro.spf

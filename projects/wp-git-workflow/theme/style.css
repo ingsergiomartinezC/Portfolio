@@ -1,0 +1,21 @@
+/*
+ Theme Name:   Mi Tema Hijo
+ Theme URI:    https://github.com/ingsergiomartinezC/wp-git-workflow
+ Description:  Tema hijo gestionado con Git. Extiende el tema padre
+               Twenty Twenty-Four con personalizaciones de frontend.
+ Author:       Sergio Martínez
+ Author URI:   https://github.com/ingsergiomartinezC
+ Template:     twentytwentyfour
+ Version:      1.0.0
+ License:      GNU General Public License v2 or later
+ License URI:  http://www.gnu.org/licenses/gpl-2.0.html
+ Text Domain:  mi-tema-hijo
+*/
+
+/*
+ * Este archivo importa los estilos del tema padre y luego aplica
+ * los estilos personalizados desde assets/css/main.css
+ *
+ * NO agregues estilos directamente aquí.
+ * Usa theme/assets/css/main.css para todos los cambios visuales.
+ */
