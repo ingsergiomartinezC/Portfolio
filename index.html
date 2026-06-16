@@ -197,45 +197,6 @@
     </div>
   </section>
 
-  <!-- GIT WORKFLOW VISUAL -->
-  <section class="section">
-    <div class="container">
-      <p class="eyebrow">Flujo de trabajo</p>
-      <h2>Git en el día a día</h2>
-      <div class="git-flow">
-        <div class="git-flow__step">
-          <div class="git-node git-node--main">main</div>
-          <p>Código estable en producción</p>
-        </div>
-        <div class="git-flow__arrow">→</div>
-        <div class="git-flow__step">
-          <div class="git-node git-node--dev">develop</div>
-          <p>Integración y pruebas</p>
-        </div>
-        <div class="git-flow__arrow">→</div>
-        <div class="git-flow__step">
-          <div class="git-node git-node--feature">feature/*</div>
-          <p>Cambios aislados por tarea</p>
-        </div>
-        <div class="git-flow__arrow">→</div>
-        <div class="git-flow__step">
-          <div class="git-node git-node--pr">Pull Request</div>
-          <p>Revisión antes de merge</p>
-        </div>
-      </div>
-      <div class="terminal">
-        <div class="terminal__bar"><span></span><span></span><span></span></div>
-        <pre class="terminal__code">
-<span class="t-gray"># Flujo de trabajo típico</span>
-<span class="t-green">$</span> git checkout -b feature/actualizar-banner-hero
-<span class="t-green">$</span> <span class="t-blue"># ... editar HTML/CSS ...</span>
-<span class="t-green">$</span> git add .
-<span class="t-green">$</span> git commit -m "feat: actualizar banner hero con nueva imagen y CTA"
-<span class="t-green">$</span> git push origin feature/actualizar-banner-hero
-<span class="t-green">$</span> <span class="t-blue"># Abrir Pull Request → revisión → merge a develop</span></pre>
-      </div>
-    </div>
-  </section>
 
   <!-- CONTACTO -->
   <section id="contacto" class="section section--dark">
